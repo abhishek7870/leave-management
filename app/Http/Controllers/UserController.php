@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\User;
+use Hash;
 class UserController extends Controller
 {
     
@@ -61,7 +62,7 @@ class UserController extends Controller
         }
       //  dd($request->all());
     
-
+        $request['password'] = Hash::make($request['password']);
         $users = User::create($request->all());
         return response()->json($users,200);
     }  

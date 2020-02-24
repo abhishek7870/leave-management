@@ -10,6 +10,7 @@ use App\User;
 use DB;
 use App\Mail\SendMailable;
 use Illuminate\Support\Collection;
+use FastExcel;
 class LeaveController extends Controller
 {
 
@@ -23,7 +24,7 @@ class LeaveController extends Controller
     {
         $leaves = Leave::all();
 
-        return response()->json($leaves->load('users'),201);
+        return response()->json($leaves->load('user'),201);
 
     }
 
@@ -156,11 +157,9 @@ class LeaveController extends Controller
 
     public function balance(Request $request, $id)
     {
-  
 
      $user = User::find($id);
       if($user) {
-       
         $leaves = $user->leaves->where('status','approved');
         $sick_balance = 0;
         $casual_balance = 0;
@@ -182,9 +181,6 @@ class LeaveController extends Controller
            $balance_casual_leave = $user->allotted_casual_leave-$casual_balance;
            $balance_sick_leave = $user->allotted_sick_leave-$sick_balance;
            $balance_privilage_leave = $user->allotted_privilage_leave-$privilage_balance;
-
-       //   $rest = array("balance_casual_leave:"=>"$balance_casual_leave", "balance_sick_leave"=>"$balance_sick_leave", "balance_privilage_leave"=>"$balance_privilage_leave");
-          
            $rest  = array();
            $rest['balance_casual_leave'] = $balance_casual_leave;
            $rest['balance_sick_leave'] = $balance_sick_leave;
@@ -194,16 +190,65 @@ class LeaveController extends Controller
           return response()->json($res,201);
 
         }
-        
-
     
-          
-        
+    }
+    public function exportExcel($id) {
+
+      $user = User::find($id);
+      if($user) {
+        $leaves = $user->leaves->where('status','approved');
+        $sick_balance = 0;
+        $casual_balance = 0;
+        $privilage_balance = 0; 
+        foreach ($leaves as $leave) 
+        {
+                if($leave->type_of_leaves  == 'sick') {
+                    $sick_balance = $sick_balance +1;
+                }
+                else if($leave->type_of_leaves == 'casual') {
+                    $casual_balance = $casual_balance + 1;
+                }
+                else if($leave->type_of_leaves == 'privilage')
+                {
+                    $privilage_balance = $privilage_balance+1;
+                }
+        }
+
+           $balance_casual_leave = $user->allotted_casual_leave-$casual_balance;
+           $balance_sick_leave = $user->allotted_sick_leave-$sick_balance;
+           $balance_privilage_leave = $user->allotted_privilage_leave-$privilage_balance;
+        $res = collect();
+        $rest=array();
+        foreach ($leaves as $leave) 
+        {
+
+           $rest['Name'] = $leave->user && $leave->user->first_name ?  $leave->user->first_name." ".($leave->user->last_name? $leave->user->last_name :"" ):"";
+           $rest['Email'] = $leave->user->email;
+           $rest['Mobile_No'] = $leave->user->mobile_no;
+           $rest['Allotted_Casual_Leave'] = $leave->user->allotted_casual_leave;
+           $rest['Allotted_Sick_Leave'] = $leave->user->allotted_sick_leave;
+           $rest['Allotted_Privilage_Leave'] = $leave->user->allotted_privilage_leave;
+           $rest['Approved_Casual_Leave'] = $casual_balance;
+           $rest['Approved_Sick_Leave'] = $sick_balance;
+           $rest['Approve_Privilage_Leave'] = $privilage_balance;
+           $rest['Balance_Casual_Leave'] = $balance_casual_leave;
+           $rest['Balance_Sick_Leave'] = $balance_sick_leave;
+           $rest['Balance_privilage_Leave'] = $balance_privilage_leave; 
+            $res->push($rest);
+        }
+
+
+        $fileName = 'leaves.'.'xls';
+        FastExcel::data($res)->export($fileName);
+        return url($fileName);
+         
+          // return response()->json($res,201);
+
+        }
 
     }
-
-
-
-
-
 }
+
+
+
+ 

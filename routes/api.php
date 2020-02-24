@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::resource('users','UserController');
 
-//Route::resource('balances','BalanceController');
+;//Route::resource('balances','BalanceController');
 
 //Route::resource('colleges','CollegeController');
 
@@ -33,6 +33,6 @@ Route::resource('leaves','LeaveController');
 Route::patch('/changestatus/{id}','LeaveController@changeStatus');
 
 Route::patch('/balance/{id}','LeaveController@balance');
-
-
+Route::post('signin','CustomAuthenticationController@signIn');
+Route::get('exportleaves/{id}','LeaveController@exportExcel');
 
