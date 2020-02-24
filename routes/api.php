@@ -18,18 +18,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::resource('administrations','AdministrationController');
+//Route::resource('administrations','AdministrationController');
 
 Route::resource('users','UserController');
 
-Route::resource('balances','BalanceController');
+//Route::resource('balances','BalanceController');
 
+//Route::resource('colleges','CollegeController');
 
-Route::resource('colleges','CollegeController');
-
-Route::resource('teachers','TeacherController');
+//Route::resource('teachers','TeacherController');
 
 Route::resource('leaves','LeaveController');
+
+Route::patch('/changestatus/{id}','LeaveController@changeStatus');
+
+Route::patch('/balance/{id}','LeaveController@balance');
 
 
 

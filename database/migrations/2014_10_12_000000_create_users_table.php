@@ -20,9 +20,9 @@ class CreateUsersTable extends Migration
             $table->boolean('is_admin')->default(false);
             $table->string('mobile_no')->unique();
             $table->string('email')->unique();
-            $table->integer('allotted_casual_leaves')->nullable();
-            $table->integer('allotted_sick_leaves')->nullable();
-            $table->integer('allotted_privilage_leaves');
+            $table->integer('allotted_casual_leave')->nullable();
+            $table->integer('allotted_sick_leave')->nullable();
+            $table->integer('allotted_privilage_leave');
             $table->integer('allowted_leave_without_pay');
             $table->string('password');
             $table->timestamps();

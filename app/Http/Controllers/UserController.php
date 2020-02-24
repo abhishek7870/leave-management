@@ -47,9 +47,9 @@ class UserController extends Controller
              "last_name" => "required|max:20",
              //"is_admin" => "required",
              "mobile_no" => "required|unique:users,mobile_no",
-             "allotted_casual_leaves" => "required:max:15",
-             "allotted_sick_leaves" => "required:max:15",
-             "allotted_privilage_leaves" => "required:max:15",
+             "allotted_casual_leave" => "required:max:15",
+             "allotted_sick_leave" => "required:max:15",
+             "allotted_privilage_leave" => "required:max:15",
              "email" => "required|unique:users,email",
              "allowted_leave_without_pay" => "required",
              "password" => "required|max:10"
