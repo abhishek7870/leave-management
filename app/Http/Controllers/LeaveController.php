@@ -192,7 +192,8 @@ class LeaveController extends Controller
         }
     
     }
-    public function exportExcel($id) {
+    public function exportExcel($id) 
+    {
 
       $user = User::find($id);
       if($user) {
@@ -247,6 +248,70 @@ class LeaveController extends Controller
         }
 
     }
+    public function exportExcelAllUser()
+    {
+        $users = User::get();
+        if($users)
+        {
+            $res = collect();
+            foreach ($users as $user) 
+             {
+                    $leaves = $user->leaves->where('status','approved');
+                    $sick_balance = 0;
+                    $casual_balance = 0;
+                    $privilage_balance = 0; 
+                    foreach ($leaves as $leave) 
+                    {
+                            if($leave->type_of_leaves  == 'sick') {
+                                $sick_balance = $sick_balance +1;
+                            }
+                            else if($leave->type_of_leaves == 'casual') {
+                                $casual_balance = $casual_balance + 1;
+                            }
+                            else if($leave->type_of_leaves == 'privilage')
+                            {
+                                $privilage_balance = $privilage_balance+1;
+                            }
+                    }
+
+                       $balance_casual_leave = $user->allotted_casual_leave-$casual_balance;
+                       $balance_sick_leave = $user->allotted_sick_leave-$sick_balance;
+                       $balance_privilage_leave = $user->allotted_privilage_leave-$privilage_balance;
+                    $rest=array();
+                    foreach ($leaves as $leave) 
+                    {
+
+                       $rest['Name'] = $leave->user && $leave->user->first_name ?  $leave->user->first_name." ".($leave->user->last_name? $leave->user->last_name :"" ):"";
+                       $rest['Email'] = $leave->user->email;
+                       $rest['Mobile_No'] = $leave->user->mobile_no;
+                       $rest['Allotted_Casual_Leave'] = $leave->user->allotted_casual_leave;
+                       $rest['Allotted_Sick_Leave'] = $leave->user->allotted_sick_leave;
+                       $rest['Allotted_Privilage_Leave'] = $leave->user->allotted_privilage_leave;
+                       $rest['Approved_Casual_Leave'] = $casual_balance;
+                       $rest['Approved_Sick_Leave'] = $sick_balance;
+                       $rest['Approve_Privilage_Leave'] = $privilage_balance;
+                       $rest['Balance_Casual_Leave'] = $balance_casual_leave;
+                       $rest['Balance_Sick_Leave'] = $balance_sick_leave;
+                       $rest['Balance_privilage_Leave'] = $balance_privilage_leave; 
+                        $res->push($rest);
+                    }
+
+
+                    
+
+                    }
+            
+             }
+             $fileName = 'leaves.'.'xls';
+                    FastExcel::data($res)->export($fileName);
+                    return url($fileName);
+                     
+        
+        }
+
+
+
+     
 }
 
 

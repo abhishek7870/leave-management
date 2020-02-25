@@ -35,4 +35,4 @@ Route::patch('/changestatus/{id}','LeaveController@changeStatus');
 Route::patch('/balance/{id}','LeaveController@balance');
 Route::post('signin','CustomAuthenticationController@signIn');
 Route::get('exportleaves/{id}','LeaveController@exportExcel');
-
+Route::get('export/{id}','LeaveController@exportExcelAllUser');
